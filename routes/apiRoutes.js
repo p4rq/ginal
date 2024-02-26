@@ -2,7 +2,7 @@
 const express = require('express');
 const axios = require('axios');
 const router = express.Router();
-const StarWarsCharacter = require('../models/starWarsCharacter'); // Путь к вашей модели
+const StarWarsCharacter = require('../models/StarWarsCharacter'); // Путь к вашей модели
 const RickAndMortyCharacter = require('../models/rickAndMortyCharacter'); // Path to your model
 const UserAction = require('../models/UserAction');
 const userMiddleware = require('../middleware/userMiddleware');
