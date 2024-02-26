@@ -1,0 +1,98 @@
+<!-- views/rickandmorty.ejs -->
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Website Title</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* Add this CSS to change carousel control icon color to black */
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            background-color: #000; /* Black color */
+        }
+
+        /* Add this CSS to change the color of the control text to black */
+        .carousel-control-prev, .carousel-control-next {
+            color: #000; /* Black color */
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="<%= lang === 'en' ? '/' : '/?lang=ru' %>"><%= lang === 'en' ? 'Home' : 'Домой' %></a>
+    <a class="navbar-brand" href="/api/rickandmorty?lang=<%= lang %>">Rick and Morty</a>
+    <a class="navbar-brand" href="/api/starwars?lang=<%= lang %>"><%= lang === 'en' ? 'Star Wars' : 'Звездные войны' %></a>
+    <a class="navbar-brand" href="/quiz"><%= lang === 'en' ? 'Quiz' : 'Викторина' %></a>
+    <form action="<%= lang === 'en' ? '/api/rickandmorty?lang=en' : '/api/rickandmorty?lang=ru' %>" class="form-inline ml-auto">
+        <div class="form-group">
+            <label for="langSelect" class="mr-2">Language:</label>
+            <select class="form-control" id="langSelect" name="lang" onchange="this.form.submit()">
+                <option value="en" <%= lang === 'en' ? 'selected' : '' %>>EN</option>
+                <option value="ru" <%= lang === 'ru' ? 'selected' : '' %>>RU</option>
+            </select>
+        </div>
+    </form>
+</nav>
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4"><%= lang === 'ru' ? 'Персонажи Rick and Morty' : 'Rick and Morty Characters' %></h1>
+    <form action="/api/rickandmorty/search" method="GET" class="mx-auto text-center p-4 bg-light rounded" id="searchForm">
+        <div class="form-group mb-3">
+            <label for="searchInput" class="mb-0 h5"><%= lang === 'ru' ? 'Поиск персонажа:' : 'Search Character:' %></label>
+            <input type="text" class="form-control" id="searchInput" name="query" placeholder="<%= lang === 'ru' ? 'Введите имя персонажа' : 'Enter character name' %>" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-md"><%= lang === 'ru' ? 'Искать' : 'Search' %></button>
+        <input type="hidden" name="lang" value="<%= lang %>">
+    </form>
+    <!-- Проверьте, что переменная characters определена перед использованием -->
+    <% if (characters && characters.length > 0) { %>
+        <div class="row">
+            <% characters.forEach(character => { %>
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="<%= character.image %>" class="card-img-top" alt="<%= character.name %>">
+                        <div class="card-body">
+                            <h5 class="card-title"><%= character.name %></h5>
+                            <p class="card-text">
+                                <strong><%= lang === 'ru' ? 'Статус:' : 'Status:' %></strong> <%= character.status %><br>
+                                <strong><%= lang === 'ru' ? 'Пол:' : 'Gender:' %></strong> <%= character.gender %><br>
+                                <strong><%= lang === 'ru' ? 'Вид:' : 'Species:' %></strong> <%= character.species %>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    <% } else { %>
+        <p>No characters found.</p>
+    <% } %>
+</div>
+
+<footer class="fixed-bottom">
+    <p class="text-center">&copy; 2024 Your Website Footer</p>
+    <!-- Add any additional footer elements -->
+</footer>
+<!-- Include Bootstrap JS and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchForm = document.getElementById('searchForm');
+        searchForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const langSelect = document.getElementById('langSelect');
+            const langValue = langSelect ? langSelect.value : 'en';
+            const searchInput = document.getElementById('searchInput');
+            const query = searchInput ? searchInput.value : '';
+            const url = `/api/rickandmorty/search?lang=${langValue}&query=${encodeURIComponent(query)}`;
+            window.location.href = url;
+        });
+    });
+</script>
+</body>
+</html>

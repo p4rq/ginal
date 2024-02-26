@@ -1,0 +1,135 @@
+<!-- views/index.ejs -->
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Website Title</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* Add this CSS to change carousel control icon color to black */
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            background-color: #000; /* Black color */
+        }
+
+        /* Add this CSS to change the color of the control text to black */
+        .carousel-control-prev, .carousel-control-next {
+            color: #000; /* Black color */
+        }
+
+        /* Add this CSS to move carousel caption to the bottom and style it */
+        .carousel-caption {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.5); /* Black color with transparency */
+            color: #fff; /* White text color */
+            padding: 15px; /* Padding around text */
+        }
+
+        .smaller-image {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="<%= lang === 'en' ? '/' : '/?lang=ru' %>"><%= lang === 'en' ? 'Home' : 'Домой' %></a>
+    <% if (typeof userId !== 'undefined') { %>
+        <% if (user && user.role === 'admin') { %>
+    <a class="navbar-brand" href="/admin"><%= lang === 'en' ? 'Admin Items' : 'Админ элементы' %></a>
+    <a class="navbar-brand" href="/admin/users"><%= lang === 'en' ? 'Admin Users' : 'Управление Пользователями' %></a>
+    <% } %>
+
+    <a class="navbar-brand" href="/api/rickandmorty?lang=<%= lang %>">Rick and Morty</a>
+    <a class="navbar-brand" href="/api/starwars?lang=<%= lang %>"><%= lang === 'en' ? 'Star Wars' : 'Звездные войны' %></a>
+    <a class="navbar-brand" href="/quiz"><%= lang === 'en' ? 'Quiz' : 'Викторина' %></a>
+
+        <!-- Если аутентифицирован, отображаем "Logout" -->
+        <a class="navbar-brand" href="/auth/logout"><%= lang === 'en' ? 'Logout' : 'Выйти' %></a>
+    <% } else { %>
+        <!-- Если не аутентифицирован, отображаем "Register" и "Login" -->
+        <a class="navbar-brand" href="/auth/register"><%= lang === 'en' ? 'Register' : 'Регистрация' %></a>
+        <a class="navbar-brand" href="/auth/login"><%= lang === 'en' ? 'Login' : 'Вход' %></a>
+    <% } %>
+    <form action="<%= lang === 'en' ? '/?lang=en' : '/?lang=ru' %>" class="form-inline ml-auto">
+        <div class="form-group">
+            <label for="langSelect" class="mr-2">Language:</label>
+            <select class="form-control" id="langSelect" name="lang" onchange="this.form.submit()">
+                <option value="en" <%= lang === 'en' ? 'selected' : '' %>>EN</option>
+                <option value="ru" <%= lang === 'ru' ? 'selected' : '' %>>RU</option>
+            </select>
+        </div>
+    </form>
+</nav>
+<div class="container mt-5 custom-background">
+    <h1 class="text-center mb-4"><%= lang === 'ru' ? 'Главная страница' : 'Main Page' %></h1>
+    <!-- Carousel Section -->
+    <div id="mainPageCarousel" class="carousel slide mx-auto" data-ride="carousel" style="max-width: 600px; max-height: 400px;">
+        <div class="carousel-inner">
+            <% items.forEach((item, index) => { %>
+                <div class="carousel-item <%= index === 0 ? 'active' : '' %> text-center">
+                    <img src="<%= item.pictures[0] %>" class="d-block mx-auto img-fluid smaller-image" alt="Item Image">
+                </div>
+            <% }) %>
+        </div>
+        <a class="carousel-control-prev" href="#mainPageCarousel" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only"><%= lang === 'ru' ? 'Предыдущий' : 'Previous' %></span>
+        </a>
+        <a class="carousel-control-next" href="#mainPageCarousel" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only"><%= lang === 'ru' ? 'Следующий' : 'Next' %></span>
+        </a>
+    </div>
+    <!-- Text Section -->
+    <% items.forEach((item, index) => { %>
+        <div id="text-section-<%= index %>" class="text-section text-center mt-3" <%= index === 0 ? '' : 'style="display: none;"' %>>
+            <% item.names.forEach(name => { %>
+                <% if (name.lang === lang) { %>
+                    <h5><%= name.value %></h5>
+                <% } %>
+            <% }) %>
+            <% item.descriptions.forEach(description => { %>
+                <% if (description.lang === lang) { %>
+                    <p><%= description.value %></p>
+                <% } %>
+            <% }) %>
+        </div>
+    <% }) %>
+</div>
+
+
+
+
+
+<!-- Include Bootstrap JS and jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function(){
+        $('#mainPageCarousel').carousel();
+
+        // Скрываем все секции текста, кроме первой
+        $('.text-section:not(:first)').hide();
+
+        // Обработчик события при смене слайда
+        $('#mainPageCarousel').on('slide.bs.carousel', function (e) {
+            var currentIndex = $(e.relatedTarget).index();
+            
+            // Скрываем все секции текста и показываем только ту, которая соответствует текущему слайду
+            $('.text-section').hide();
+            $('#text-section-' + currentIndex).show();
+        });
+    });
+</script>
+
+<%- include('partials/footer') %>

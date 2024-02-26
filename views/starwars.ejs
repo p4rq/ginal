@@ -1,0 +1,79 @@
+<!-- views/starwars.ejs -->
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Star Wars Characters</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* Add your custom styles for Star Wars characters here */
+        .card {
+            border: 1px solid #ddd;
+            margin: 10px;
+            padding: 10px;
+            text-align: center;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="<%= lang === 'en' ? '/' : '/?lang=ru' %>"><%= lang === 'en' ? 'Home' : 'Домой' %></a>
+        <a class="navbar-brand" href="/api/rickandmorty?lang=<%= lang %>">Rick and Morty</a>
+        <a class="navbar-brand" href="/api/starwars?lang=<%= lang %>"><%= lang === 'en' ? 'Star Wars' : 'Звездные войны' %></a>
+        <a class="navbar-brand" href="/quiz"><%= lang === 'en' ? 'Quiz' : 'Викторина' %></a>
+
+    <form action="<%= lang === 'en' ? '/api/starwars?lang=en' : '/api/starwars?lang=ru' %>" class="form-inline ml-auto">
+        <div class="form-group">
+            <label for="langSelect" class="mr-2">Language:</label>
+            <select class="form-control" id="langSelect" name="lang" onchange="this.form.submit()">
+                <option value="en" <%= lang === 'en' ? 'selected' : '' %>>EN</option>
+                <option value="ru" <%= lang === 'ru' ? 'selected' : '' %>>RU</option>
+            </select>
+        </div>
+    </form>
+</nav>
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4"><%= lang === 'ru' ? 'Персонажи Звездных войн' : 'Star Wars Characters' %></h1>
+    
+    <form action="/api/starwars/search" method="GET" class="mx-auto text-center p-4 bg-light rounded" id="searchForm">
+        <div class="form-group">
+            <label for="searchInput" class="mb-0 h5"><%= lang === 'ru' ? 'Поиск персонажа:' : 'Search Character:' %></label>
+            <input type="text" class="form-control mx-2" id="searchInput" name="query" placeholder="<%= lang === 'ru' ? 'Введите имя персонажа' : 'Enter character name' %>" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-md"><%= lang === 'ru' ? 'Искать' : 'Search' %></button>
+        <input type="hidden" name="lang" value="<%= lang %>">
+    </form>
+
+    <% if (characters && characters.length > 0) { %>
+        <div class="row text-center"> <!-- Add text-center class for centering -->
+            <% characters.forEach(character => { %>
+                <div class="col-md-4 mb-4 mx-auto"> <!-- Add mx-auto for center alignment -->
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title"><%= character.name %></h5>
+                            <p class="card-text">
+                                <strong><%= lang === 'ru' ? 'Рост:' : 'Height:' %></strong> <%= character.height %><br>
+                                <strong><%= lang === 'ru' ? 'Вес:' : 'Weight:' %></strong> <%= character.mass %><br>
+                                <strong><%= lang === 'ru' ? 'Пол:' : 'Gender:' %></strong> <%= character.gender %><br>
+                                <strong><%= lang === 'ru' ? 'Год рождения:' : 'Birth Year:' %></strong> <%= character.birth_year || 'N/A' %><br>
+                                <strong><%= lang === 'ru' ? 'Цвет глаз:' : 'Eye Color:' %></strong> <%= character.eye_color || 'N/A' %><br>
+                                <!-- Add more details as needed -->
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    <% } else { %>
+        <p>No characters found.</p>
+    <% } %>
+
+<%- include('partials/footer') %>
+
+</body>
+</html>

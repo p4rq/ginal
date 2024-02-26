@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Website Title</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* Add this CSS to change carousel control icon color to black */
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            background-color: #000; /* Black color */
+        }
+
+        /* Add this CSS to change the color of the control text to black */
+        .carousel-control-prev, .carousel-control-next {
+            color: #000; /* Black color */
+        }
+
+        /* Add this CSS to move carousel caption to the bottom and style it */
+        .carousel-caption {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.5); /* Black color with transparency */
+            color: #fff; /* White text color */
+            padding: 15px; /* Padding around text */
+        }
+
+        .smaller-image {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="<%= lang === 'en' ? '/' : '/?lang=ru' %>"><%= lang === 'en' ? 'Home' : 'Домой' %></a>
+    <a class="navbar-brand" href="/admin"><%= lang === 'en' ? 'Admin Items' : 'Админ элементы' %></a>
+    <a class="navbar-brand" href="/admin/users"><%= lang === 'en' ? 'Admin Users' : 'Управление Пользователями' %></a>
+    <a class="navbar-brand" href="/api/rickandmorty?lang=<%= lang %>">Rick and Morty</a>
+    <a class="navbar-brand" href="/api/starwars?lang=<%= lang %>"><%= lang === 'en' ? 'Star Wars' : 'Звездные войны' %></a>
+        <!-- Если аутентифицирован, отображаем "Logout" -->
+        <a class="navbar-brand" href="/auth/logout"><%= lang === 'en' ? 'Logout' : 'Выйти' %></a>
+    <form action="<%= lang === 'en' ? '/admin?lang=en' : '/admin?lang=ru' %>" class="form-inline ml-auto">
+        <div class="form-group">
+            <label for="langSelect" class="mr-2">Language:</label>
+            <select class="form-control" id="langSelect" name="lang" onchange="this.form.submit()">
+                <option value="en" <%= lang === 'en' ? 'selected' : '' %>>EN</option>
+                <option value="ru" <%= lang === 'ru' ? 'selected' : '' %>>RU</option>
+            </select>
+        </div>
+    </form>
+</nav>
+<body>
+  <div class="container mt-5">
+    <h2>Welcome to the Admin Panel</h2>
+
+    <!-- Display items in a table -->
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Pictures</th>
+          <th>Name (RU)</th>
+          <th>Name (EN)</th>
+          <th>Description (RU)</th>
+          <th>Description (EN)</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% items.forEach(item => { %>
+          <tr>
+            <td><%= item._id %></td>
+            <td>
+              <!-- Display pictures using a carousel or any other suitable method -->
+              <% item.pictures.forEach(picture => { %>
+                <img src="<%= picture %>" alt="Item Picture" class="img-thumbnail" style="max-width: 100px;">
+              <% }) %>
+            </td>
+            <td>
+              <% item.names.forEach(name => { %>
+                <% if (name.lang === 'ru') { %>
+                  <%= name.value %>
+                <% } %>
+              <% }) %>
+            </td>
+            <td>
+              <% item.names.forEach(name => { %>
+                <% if (name.lang === 'en') { %>
+                  <%= name.value %>
+                <% } %>
+              <% }) %>
+            </td>
+            <td>
+              <% item.descriptions.forEach(description => { %>
+                <% if (description.lang === 'ru') { %>
+                  <%= description.value %>
+                <% } %>
+              <% }) %>
+            </td>
+            <td>
+              <% item.descriptions.forEach(description => { %>
+                <% if (description.lang === 'en') { %>
+                  <%= description.value %>
+                <% } %>
+              <% }) %>
+            </td>
+            <td>
+              <!-- Add edit and delete buttons with appropriate forms -->
+              <button class="btn btn-primary btn-sm" onclick="showEditForm('<%= item._id %>')">Edit</button>
+              <form id="editForm<%= item._id %>" action="/admin/items/<%= item._id %>/edit" method="POST" style="display: none;">
+                
+                <div class="form-group">
+                  <label for="pictures">Pictures:</label>
+                  <input type="text" name="pictures" class="form-control" value="<%= item.pictures.join(', ') %>" placeholder="Picture URLs (comma-separated)" required>
+                </div>                
+                <div class="form-group">
+                  <label for="namesRU">Name (RU):</label>
+                  <input type="text" name="names[0][lang]" class="form-control" value="ru" readonly>
+                  <input type="text" name="names[0][value]" class="form-control" value="<%= item.names.find(name => name.lang === 'ru') ? item.names.find(name => name.lang === 'ru').value : '' %>" placeholder="Name (RU)" required>
+                </div>
+                <div class="form-group">
+                  <label for="namesEN">Name (EN):</label>
+                  <input type="text" name="names[1][lang]" class="form-control" value="en" readonly>
+                  <input type="text" name="names[1][value]" class="form-control" value="<%= item.names.find(name => name.lang === 'en') ? item.names.find(name => name.lang === 'en').value : '' %>" placeholder="Name (EN)" required>
+                </div>
+                <div class="form-group">
+                  <label for="descriptionsRU">Description (RU):</label>
+                  <input type="text" name="descriptions[0][lang]" class="form-control" value="ru" readonly>
+                  <input type="text" name="descriptions[0][value]" class="form-control" value="<%= item.descriptions.find(description => description.lang === 'ru') ? item.descriptions.find(description => description.lang === 'ru').value : '' %>" placeholder="Description (RU)" required>
+                </div>
+                <div class="form-group">
+                  <label for="descriptionsEN">Description (EN):</label>
+                  <input type="text" name="descriptions[1][lang]" class="form-control" value="en" readonly>
+                  <input type="text" name="descriptions[1][value]" class="form-control" value="<%= item.descriptions.find(description => description.lang === 'en') ? item.descriptions.find(description => description.lang === 'en').value : '' %>" placeholder="Description (EN)" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm">Save</button>
+              </form>
+              <form action="/admin/items/<%= item._id %>/delete?_method=DELETE" method="POST" style="display: inline;">
+                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <!-- Add a button to show the form for adding new items -->
+    <button class="btn btn-success" onclick="showAddForm()">Add New Item</button>
+
+    <!-- Form for adding new items (initially hidden) -->
+    <form id="addForm" action="/admin/items" method="POST" style="display: none;">
+      <div class="form-group">
+        <label for="pictures">Pictures:</label>
+        <input type="text" name="pictures" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="namesRU">Name (RU):</label>
+        <input type="text" name="names[0][lang]" class="form-control" value="ru" readonly>
+        <input type="text" name="names[0][value]" class="form-control" placeholder="Name (RU)" required>
+      </div>
+      <div class="form-group">
+        <label for="namesEN">Name (EN):</label>
+        <input type="text" name="names[1][lang]" class="form-control" value="en" readonly>
+        <input type="text" name="names[1][value]" class="form-control" placeholder="Name (EN)" required>
+      </div>
+      <div class="form-group">
+        <label for="descriptionsRU">Description (RU):</label>
+        <input type="text" name="descriptions[0][lang]" class="form-control" value="ru" readonly>
+        <input type="text" name="descriptions[0][value]" class="form-control" placeholder="Description (RU)" required>
+      </div>
+      <div class="form-group">
+        <label for="descriptionsEN">Description (EN):</label>
+        <input type="text" name="descriptions[1][lang]" class="form-control" value="en" readonly>
+        <input type="text" name="descriptions[1][value]" class="form-control" placeholder="Description (EN)" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Add Item</button>
+    </form>
+  </div>
+
+  <!-- Include Bootstrap JS and jQuery -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <!-- JavaScript to toggle the visibility of the add form and edit forms -->
+  <script>
+    function showAddForm() {
+      document.getElementById("addForm").style.display = "block";
+    }
+
+    function showEditForm(itemId) {
+      // Hide all edit forms
+      document.querySelectorAll('[id^="editForm"]').forEach(form => {
+        form.style.display = "none";
+      });
+
+      // Show the edit form for the specific item
+      document.getElementById("editForm" + itemId).style.display = "block";
+    }
+  </script>
+</body>
+</html>

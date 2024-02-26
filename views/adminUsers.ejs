@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="<%= lang %>">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Website Title</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* Add this CSS to change carousel control icon color to black */
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            background-color: #000; /* Black color */
+        }
+
+        /* Add this CSS to change the color of the control text to black */
+        .carousel-control-prev, .carousel-control-next {
+            color: #000; /* Black color */
+        }
+
+        /* Add this CSS to move carousel caption to the bottom and style it */
+        .carousel-caption {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.5); /* Black color with transparency */
+            color: #fff; /* White text color */
+            padding: 15px; /* Padding around text */
+        }
+
+        .smaller-image {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="<%= lang === 'en' ? '/' : '/?lang=ru' %>"><%= lang === 'en' ? 'Home' : 'Домой' %></a>
+    <a class="navbar-brand" href="/admin"><%= lang === 'en' ? 'Admin Items' : 'Админ элементы' %></a>
+    <a class="navbar-brand" href="/admin/users"><%= lang === 'en' ? 'Admin Users' : 'Управление Пользователями' %></a>
+    <a class="navbar-brand" href="/api/rickandmorty?lang=<%= lang %>">Rick and Morty</a>
+    <a class="navbar-brand" href="/api/starwars?lang=<%= lang %>"><%= lang === 'en' ? 'Star Wars' : 'Звездные войны' %></a>
+        <a class="navbar-brand" href="/auth/logout"><%= lang === 'en' ? 'Logout' : 'Выйти' %></a>
+    <form action="<%= lang === 'en' ? '/admin/users?lang=en' : '/admin/users?lang=ru' %>" class="form-inline ml-auto">
+        <div class="form-group">
+            <label for="langSelect" class="mr-2">Language:</label>
+            <select class="form-control" id="langSelect" name="lang" onchange="this.form.submit()">
+                <option value="en" <%= lang === 'en' ? 'selected' : '' %>>EN</option>
+                <option value="ru" <%= lang === 'ru' ? 'selected' : '' %>>RU</option>
+            </select>
+        </div>
+    </form>
+</nav>
+<body>
+  <div class="container mt-5">
+    <h2>Welcome to the Admin Users Panel</h2>
+
+    <!-- Display users in a table -->
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Password</th>
+          <th>Role</th>
+          <th>Created At</th>
+          <th>Updated At</th>
+          <th>Deleted At</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% users.forEach(user => { %>
+          <tr>
+            <td><%= user._id %></td>
+            <td><%= user.username %></td>
+            <td><%= user.password %></td>
+            <td><%= user.role %></td>
+            <td><%= new Date(user.createdAt).toLocaleString() %></td>
+            <td><%= user.updatedAt ? new Date(user.updatedAt).toLocaleString() : '-' %></td>
+            <td><%= user.deletedAt ? new Date(user.deletedAt).toLocaleString() : '-' %></td>
+            <td>
+              <!-- Add edit and delete buttons with appropriate forms -->
+              <button class="btn btn-primary btn-sm" onclick="showEditForm('<%= user._id %>')">Edit</button>
+              <form id="editForm<%= user._id %>" action="/admin/users/<%= user._id %>/edit" method="POST" style="display: none;">
+                <div class="form-group">
+                  <label for="username">Username:</label>
+                  <input type="text" name="username" class="form-control" value="<%= user.username %>" required>
+                </div>
+                <div class="form-group">
+                  <label for="password">Password:</label>
+                  <input type="password" name="password" class="form-control" value="<%= user.password %>" required>
+                </div>
+                <div class="form-group">
+                  <label for="role">Role:</label>
+                  <input type="text" name="role" class="form-control" value="<%= user.role %>" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm">Save</button>
+              </form>
+              <form action="/admin/users/<%= user._id %>/delete" method="POST" style="display: inline;">
+                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+
+    <!-- Add a button to show the form for adding new users -->
+    <button class="btn btn-success" onclick="showAddForm()">Add New User</button>
+
+    <!-- Form for adding new users (initially hidden) -->
+    <form id="addForm" action="/admin/users" method="POST" style="display: none;">
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" name="username" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" name="password" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="role">Role:</label>
+        <input type="text" name="role" class="form-control" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Add User</button>
+    </form>
+  </div>
+
+  <!-- Include Bootstrap JS and jQuery -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <!-- JavaScript to toggle the visibility of the add form and edit forms -->
+  <script>
+    function showAddForm() {
+      document.getElementById("addForm").style.display = "block";
+    }
+
+    function showEditForm(userId) {
+      // Hide all edit forms
+      document.querySelectorAll('[id^="editForm"]').forEach(form => {
+        form.style.display = "none";
+      });
+
+      // Show the edit form for the specific user
+      document.getElementById("editForm" + userId).style.display = "block";
+    }
+  </script>
+</body>
+</html>

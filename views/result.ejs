@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rick and Morty Quiz Result</title>
+    <meta property="og:title" content="Rick and Morty Quiz Result">
+    <meta property="og:description" content="I just scored <%= score %> out of <%= totalQuestions %> in the Rick and Morty Quiz!">
+    <meta property="og:image" content="https://your-quiz-image-url.com"> <!-- Замените на URL-адрес изображения для отображения при шаринге -->
+    <meta property="og:url" content="https://your-quiz-url.com/result?score=<%= score %>&totalQuestions=<%= totalQuestions %>">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .result-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #007bff;
+        }
+
+        p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .share-heading {
+            text-align: center;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .share-buttons {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .share-buttons img {
+            width: 48px;
+            height: 48px;
+            margin-right: 10px;
+        }
+
+        .back-home-button {
+            display: block;
+            width: 100%;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="result-container">
+        <h1 class="mb-4">Quiz Result</h1>
+
+        <p>Your Score: <%= score %> / <%= totalQuestions %></p>
+
+        <!-- Share Your Results heading -->
+        <div class="share-heading">Share Your Results</div>
+
+        <!-- Share buttons -->
+        <div class="share-buttons">
+            <!-- Facebook Share Button -->
+            <div class="fb-share-button" data-href="https://your-quiz-url.com" data-layout="button_count" data-size="small">
+                <a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fyour-quiz-url.com%2F&amp;src=sdkpreparse">
+                    <img src="https://img.icons8.com/ios-filled/50/000000/facebook-new.png" alt="Share on Facebook"/>
+                </a>
+            </div>
+
+            <!-- Twitter Share Button -->
+            <a class="twitter-share-button" href="https://twitter.com/intent/tweet?url=https%3A%2F%2Fyour-quiz-url.com%2F&amp;text=I%20just%20scored%20<%= score %>%20out%20of%20<%= totalQuestions %>%20in%20the%20Rick%20and%20Morty%20Quiz!&amp;hashtags=RickAndMortyQuiz" data-size="large">
+                <img src="https://img.icons8.com/ios-filled/50/000000/twitter-circled.png" alt="Tweet on Twitter"/>
+            </a>
+
+            <!-- Telegram Share Button -->
+            <a href="https://t.me/share/url?url=https%3A%2F%2Fyour-quiz-url.com%2Fresult%3Fscore%3D<%= score %>%26totalQuestions%3D<%= totalQuestions %>" target="_blank">
+                <img src="https://img.icons8.com/ios-filled/50/000000/telegram-app.png" alt="Share on Telegram"/>
+            </a>
+        </div>
+
+        <!-- Back to Home Page button -->
+        <a href="/" class="btn btn-primary back-home-button">Back to Home Page</a>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>
